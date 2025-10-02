@@ -1,0 +1,7 @@
+.ipynb_checkpoints
+.env
+.env.*
+.env*
+
+Dockerfile
+docker-compose.yml
