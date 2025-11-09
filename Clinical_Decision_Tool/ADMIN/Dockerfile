@@ -27,7 +27,7 @@ RUN npm run build
 # --- Production stage (serve with nginx) ---
 FROM nginx:alpine AS prod
 # copy build from build stage into nginx html folder
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # EXPOSE 5174
 
