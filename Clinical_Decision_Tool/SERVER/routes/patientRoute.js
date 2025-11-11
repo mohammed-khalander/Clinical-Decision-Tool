@@ -22,7 +22,7 @@ router.delete('/cancelAppointment',userAuthMiddleware,cancelAppointment);
 router.get('/allDoctors',showAllDoctors);
 
 
-router.post('/regesterDetails',userAuthMiddleware,TakeDetailsInput);
+router.post('/registerDetails',userAuthMiddleware,TakeDetailsInput);
 router.get('/getPatientInputDetails',userAuthMiddleware,getPatientDetails);
 
 

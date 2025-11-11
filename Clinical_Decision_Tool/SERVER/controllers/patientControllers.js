@@ -622,24 +622,25 @@ const verifyRazorPayPayment = async (req,res)=>{
 
 // CDT: Clinical Decision Tool
 
-
+/**
+ 
 const TakeDetailsInput = async (req,res)=>{
     const userId  = req.user;
-
+    
     if(!userId){
         return res.json({success:false,message:`Patient Not Found, Login Again Please `});
     }
-
+    
     try{
 
-
+    
 
         const patient = await Patient.findById(userId);
-
+        
          if(!patient){
             return res.json({success:false,message:`Patient Not Found, Login Again Please `});
         }
-
+        
 
         // console.log(req.body);
 
@@ -772,7 +773,85 @@ const getPatientDetails = async (req,res)=>{
 }
 
 
+        * 
+*/
 
+
+
+const TakeDetailsInput = async (req, res) => {
+  const userId = req.user;
+
+  if(!userId){
+    return res.json({success:false,message:`Patient Not Found, Login Again Please`});
+  }
+
+  try{
+
+    const patient = await Patient.findById(userId);
+    if(!patient){
+      return res.json({success:false,message:`Patient Not Found, Login Again Please`});
+    }
+    console.log("Patient Not getting ??",patient);
+
+    const { age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal } = req.body;
+
+    if(!age||!sex||!cp||!trestbps||!chol||!fbs||!restecg||!thalach||!exang||!oldpeak||!slope||!ca||!thal){
+      return res.json({success:false,message:`All mentioned fields are mandatory`});
+    }
+    console.log("Patient Details are as follows ",req.body);
+    if(!patient.isDetailsFilled){
+      await PatientDetails.create({
+        patient:userId,
+        age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal
+      });
+    } else {
+      await PatientDetails.findOneAndUpdate(
+        {patient:userId},
+        {$set:{ age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal }}
+      );
+    }
+
+    await Patient.findByIdAndUpdate(userId,{ $set:{ isDetailsFilled:true } });
+
+    return res.json({success:true,message:`Patient Details Updated Successfully`});
+
+  }catch(error){
+    return res.json({success:false,message:`Error: ${error}`});
+  }
+}
+
+
+
+
+
+const getPatientDetails = async (req,res)=>{
+  try{
+
+    const patientId = req.user;
+    if(!patientId){
+      return res.json({success:false,message:`Patient Not Found, Login Again Please`});
+    }
+
+    const patient = await Patient.findById(patientId);
+    if(!patient){
+      return res.json({success:false,message:`Patient Not Found, Login Again Please`});
+    }
+
+    if(!patient.isDetailsFilled){
+      return res.json({success:false,message:`Please Fill The Details First`});
+    }
+
+    const details = await PatientDetails.find({patient:patientId}).populate('patient');
+    if(!details){
+      return res.json({success:false,message:`Patient Details Not Found`});
+    }
+
+    return res.json({success:true,message:details});
+
+  }catch(error){
+    return res.json({success:false,message:`Error: ${error}`});
+  }
+}
 
 
 
