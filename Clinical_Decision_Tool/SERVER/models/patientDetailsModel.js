@@ -191,10 +191,15 @@ const PatientDetailsSchema = new mongoose.Schema(
 
     // Model Output
     disease_prediction: {
-        type: Number, 
-        enum: [0, 1], 
+        type: String, 
         required: false 
     }, // 1 = Disease, 0 = No Disease
+
+    // disease_prediction: {
+    //     type: Number, 
+    //     enum: [0, 1], 
+    //     required: false 
+    // }, // 1 = Disease, 0 = No Disease
 
     prediction_probability: { 
         type: Number, 

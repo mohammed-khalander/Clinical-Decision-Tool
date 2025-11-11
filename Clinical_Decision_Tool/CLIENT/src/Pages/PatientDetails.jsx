@@ -1136,14 +1136,20 @@ setEditState(false);
           "Chest Pain Type (cp)": patientDetailsBackEnd?.cp,
           "Resting BP (trestbps)": patientDetailsBackEnd?.trestbps,
           "Serum Cholesterol (chol)": patientDetailsBackEnd?.chol,
-          "Fasting Blood Sugar (fbs)": patientDetailsBackEnd?.fbs,
+          // "Fasting Blood Sugar (fbs)": patientDetailsBackEnd?.fbs,
+          "Fasting Blood Sugar (fbs)": patientDetailsBackEnd?.fbs===1 ? "Yes" : patientDetailsBackEnd?.fbs===0 ? "No" : "N/A",
         //   "Resting ECG (restecg)": patientDetailsBackEnd?.restecg,
         "Resting ECG (restecg)": patientDetailsBackEnd?.restecg===0 ? "Normal" : patientDetailsBackEnd?.restecg===1 ? "ST-T Wave Abnormality" : patientDetailsBackEnd?.restecg===2 ? "Left Ventricular Hypertrophy" : "N/A",
           "Max Heart Rate (thalach)": patientDetailsBackEnd?.thalach,
           "Exercise Induced Angina (exang)": patientDetailsBackEnd?.exang,
           "ST Depression (oldpeak)": patientDetailsBackEnd?.oldpeak,
           "Slope (slope)": patientDetailsBackEnd?.slope,
-          "Vessels Colored (ca)": patientDetailsBackEnd?.ca,
+          // "Vessels Colored (ca)": patientDetailsBackEnd?.ca,
+          "Vessels Colored (ca)": patientDetailsBackEnd?.ca === 0 ? "0" :
+                        patientDetailsBackEnd?.ca === 1 ? "1" :
+                        patientDetailsBackEnd?.ca === 2 ? "2" :
+                        patientDetailsBackEnd?.ca === 3 ? "3" : "N/A",
+
           "Thal": patientDetailsBackEnd?.thal
         }).map(([label,val],i)=>(
           <div className="pateint-input-container" key={i}>

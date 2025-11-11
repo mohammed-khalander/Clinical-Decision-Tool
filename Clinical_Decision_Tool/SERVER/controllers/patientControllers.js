@@ -853,7 +853,7 @@ const getPatientDetails = async (req,res)=>{
   }
 }
 
-
+import axios from 'axios';
 
 const makePrediction = async (req, res) => {
   try{
@@ -870,41 +870,42 @@ const makePrediction = async (req, res) => {
       return res.json({success:false,message:`No Patient Details Found`});
     }
 
-    console.log(details);
-    // Send to Python Prediction Service
-    // const pythonResponse = await axios.post("http://localhost:5000/predict", {
-    //   age: details.age,
-    //   sex: details.sex,
-    //   cp: details.cp,
-    //   trestbps: details.trestbps,
-    //   chol: details.chol,
-    //   fbs: details.fbs,
-    //   restecg: details.restecg,
-    //   thalach: details.thalach,
-    //   exang: details.exang,
-    //   oldpeak: details.oldpeak,
-    //   slope: details.slope,
-    //   ca: details.ca,
-    //   thal: details.thal
-    // });
+    // console.log(details);
 
-    // const { prediction, probability } = pythonResponse.data;
+    const pythonResponse = await axios.post("http://localhost:5000/predict", {
+      age: details.age,
+      sex: details.sex,
+      cp: details.cp,
+      trestbps: details.trestbps,
+      chol: details.chol,
+      fbs: details.fbs,
+      restecg: details.restecg,
+      thalach: details.thalach,
+      exang: details.exang,
+      oldpeak: details.oldpeak,
+      slope: details.slope,
+      ca: details.ca,
+      thal: details.thal
+    });
 
-    // await PatientDetails.findOneAndUpdate({patient:patientId},{
-    //   $set:{
-    //     disease_prediction: prediction,
-    //     prediction_probability: probability
-    //   }
-    // });
+
+    console.log("Python Response", pythonResponse);
+
+    const { prediction, probability } = pythonResponse.data;
+
+    await PatientDetails.findOneAndUpdate({patient:patientId},{
+      $set:{
+        disease_prediction: prediction,
+        prediction_probability: probability
+      }
+    });
 
     return res.json({
       success:true,
       message:"Prediction Saved",
-      prediction:10,
-      probability:10,
-    //   predictionText: prediction === 1 ? "High Risk of Heart Disease" : "Low Risk / No Heart Disease"
-      predictionText:  "High Risk of Heart Disease, Low Risk / No Heart Disease",
-      details,
+      prediction,
+      probability,
+      predictionText: prediction === 1 ? "High Risk of Heart Disease" : "Low Risk / No Heart Disease"
     });
 
   }catch(error){
