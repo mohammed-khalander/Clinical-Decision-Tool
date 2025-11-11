@@ -3,7 +3,7 @@ import express from 'express';
 const router = express.Router();
 
 
-import { signUp,verifyEmailWithOTP, login, logOut, checkPatientAuthorization, getCurrentPatient, updateProfile, showAllDoctors, tempShowAllDoctors, showSelectedPatientAppointment, cancelAppointment, createPaymentOrder, verifyRazorPayPayment, TakeDetailsInput, getPatientDetails } from '../controllers/patientControllers.js';
+import { signUp,verifyEmailWithOTP, login, logOut, checkPatientAuthorization, getCurrentPatient, updateProfile, showAllDoctors, tempShowAllDoctors, showSelectedPatientAppointment, cancelAppointment, createPaymentOrder, verifyRazorPayPayment, TakeDetailsInput, getPatientDetails, makePrediction } from '../controllers/patientControllers.js';
 
 import { userAuthMiddleware } from '../middlewares/jwtAuth.js';
 
@@ -25,9 +25,12 @@ router.get('/allDoctors',showAllDoctors);
 router.post('/registerDetails',userAuthMiddleware,TakeDetailsInput);
 router.get('/getPatientInputDetails',userAuthMiddleware,getPatientDetails);
 
+router.post('/predict',userAuthMiddleware,makePrediction);
+
 
 router.post('/createOrderPayment',userAuthMiddleware,createPaymentOrder);
 router.post('/verifyRazorPay',userAuthMiddleware,verifyRazorPayPayment);
+
 
 
 

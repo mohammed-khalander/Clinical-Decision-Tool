@@ -864,6 +864,9 @@ const PatientDetails = () => {
   const [editState,setEditState] = useState(false);
   const [patientDetailsBackEnd,setPatientDetailsBackEnd] = useState([]);
   
+  const [predictionResult, setPredictionResult] = useState(null);
+  const [predictionProbability, setPredictionProbability] = useState(null);
+
 
   const [patientDetails,setPatientDetails] = useState({
     age:"",
@@ -942,6 +945,36 @@ setEditState(false);
         fetchPatientDetails();
     }
   },[patientData]);
+
+
+  const handlePredict = async () => {
+  try {
+    const fetchOptions = {
+      method:"POST",
+      credentials:"include",
+      headers:{ "Content-Type":"application/json" }
+    };
+
+    const response = await fetch(`${backend_URL}/api/patient/predict`, fetchOptions);
+    const data = await response.json();
+    console.log("Prediction Response:", data);
+
+    if(data.success){
+      toast.success("Prediction Successful");
+      setPredictionResult(data.predictionText);
+      setPredictionProbability(data.probability);
+    } else {
+      toast.error(data.message);
+    }
+
+  } catch (error) {
+    toast.error("Prediction Error");
+    console.log("Prediction Error:", error);
+  }
+};
+
+
+
 
   if(!patientData?.isDetailsFilled || editState){
   return (
@@ -1122,6 +1155,48 @@ setEditState(false);
         ))}
 
       </div>
+
+      <div className="prediction-card" style={{
+  margin:"20px auto",
+  padding:"20px",
+  borderRadius:"10px",
+  background:"#ffffff10",
+  border:"1px solid #ccc",
+  width:"90%",
+  textAlign:"center"
+}}>
+  <h2 style={{marginBottom:"15px"}}> Heart Disease Risk Prediction </h2>
+
+  <button
+    onClick={handlePredict}
+    style={{
+      padding:"12px 20px",
+      backgroundColor: "#006f75fb",
+      color:"white",
+      border:"none",
+      borderRadius:"8px",
+      cursor:"pointer",
+      fontSize:"16px",
+      marginBottom:"15px"
+    }}
+  >
+    Predict
+  </button>
+
+  {predictionResult && (
+    <div style={{marginTop:"15px"}}>
+      <h3 style={{marginBottom:"5px"}}> Result: </h3>
+      <p style={{fontSize:"18px", fontWeight:"bold"}}>{predictionResult}</p>
+
+      {predictionProbability !== null && (
+        <>
+          <p style={{marginTop:"10px"}}>Confidence Score:</p>
+          <p style={{fontSize:"16px"}}>{(predictionProbability * 100).toFixed(2)}%</p>
+        </>
+      )}
+    </div>
+  )}
+</div>
 
       <Footer/>
     </div>
