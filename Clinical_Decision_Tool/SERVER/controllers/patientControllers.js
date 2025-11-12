@@ -854,6 +854,9 @@ const getPatientDetails = async (req,res)=>{
 }
 
 import axios from 'axios';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const makePrediction = async (req, res) => {
   try{
@@ -889,23 +892,63 @@ const makePrediction = async (req, res) => {
     });
 
 
-    console.log("Python Response", pythonResponse);
+    // console.log("Python Response", pythonResponse);
 
     const { prediction, probability } = pythonResponse.data;
 
-    await PatientDetails.findOneAndUpdate({patient:patientId},{
-      $set:{
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const prompt = `
+        You are a medical assistant. Explain heart disease risk level clearly.
+
+        Patient Details:
+        Age: ${details.age}
+        Sex: ${details.sex === 1 ? "Male" : "Female"}
+        Chest Pain Type (cp): ${details.cp}
+        Resting BP: ${details.trestbps}
+        Cholesterol: ${details.chol}
+        Fasting Blood Sugar (fbs): ${details.fbs}
+        Resting ECG: ${details.restecg}
+        Max Heart Rate (thalach): ${details.thalach}
+        Exercise Angina (exang): ${details.exang}
+        ST Depression (oldpeak): ${details.oldpeak}
+        Slope: ${details.slope}
+        Major Vessels (ca): ${details.ca}
+        Thalassemia (thal): ${details.thal}
+
+        ML Model Result:
+        Prediction: ${prediction === 1 ? "Higher Risk of Heart Disease" : "Low Risk / No Heart Disease"}
+        Confidence Score: ${(probability * 100).toFixed(2)}%
+
+        Instructions:
+        - Explain in simple medical language.
+        - If high risk → advise lifestyle changes, tests, and follow-up steps.
+        - Keep it empathetic, professional, and helpful.
+    `;
+
+    const aiResponse = await model.generateContent(prompt);
+    console.log("Response from AI looks like ", aiResponse);
+    const ai_text = aiResponse.response.text();
+    console.log("The Response Text is", ai_text);
+
+
+
+    await PatientDetails.findOneAndUpdate(
+      {patient:patientId},
+      {$set:{
         disease_prediction: prediction,
-        prediction_probability: probability
-      }
-    });
+        prediction_probability: probability,
+        ai_explanation: ai_text
+      }}
+    );
 
     return res.json({
       success:true,
-      message:"Prediction Saved",
+      message:"Prediction + Explanation Generated",
       prediction,
       probability,
-      predictionText: prediction === 1 ? "High Risk of Heart Disease" : "Low Risk / No Heart Disease"
+      predictionText: prediction === 1 ? "High Risk of Heart Disease" : "Low Risk / No Heart Disease",
+      ai_explanation: ai_text
     });
 
   }catch(error){
