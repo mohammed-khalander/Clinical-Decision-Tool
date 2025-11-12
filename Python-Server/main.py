@@ -69,3 +69,6 @@ def predict(data: PatientInput):
         "prediction": "Heart Disease Likely" if pred == 1 else "No Heart Disease Detected",
         "probability": prob
     }
+
+
+# uvicorn main:app --reload --port 5000
