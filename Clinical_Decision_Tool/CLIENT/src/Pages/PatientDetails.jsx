@@ -856,7 +856,7 @@ import { AppContext } from '../Contexts/AppContext';
 import { toast } from 'react-toastify';
 import './CSS/PatientDetails.css';
 import Footer from '../Components/Footer';
-
+import Markdown from 'react-markdown'
 const PatientDetails = () => {
 
   const { patientData, backend_URL } = useContext(AppContext);
@@ -866,6 +866,9 @@ const PatientDetails = () => {
   
   const [predictionResult, setPredictionResult] = useState(null);
   const [predictionProbability, setPredictionProbability] = useState(null);
+
+  const [aiExplanation, setAiExplanation] = useState(null);
+
 
 
   const [patientDetails,setPatientDetails] = useState({
@@ -947,7 +950,7 @@ setEditState(false);
   },[patientData]);
 
 
-  const handlePredict = async () => {
+const handlePredict = async () => {
   try {
     const fetchOptions = {
       method:"POST",
@@ -961,8 +964,10 @@ setEditState(false);
 
     if(data.success){
       toast.success("Prediction Successful");
+
       setPredictionResult(data.predictionText);
       setPredictionProbability(data.probability);
+      setAiExplanation(data.ai_explanation); 
     } else {
       toast.error(data.message);
     }
@@ -1202,6 +1207,28 @@ setEditState(false);
       )}
     </div>
   )}
+
+  {aiExplanation && (
+  <div style={{
+    marginTop:"20px",
+    padding:"15px",
+    background:"#f7fcff",
+    borderLeft:"5px solid #2b8dbd",
+    borderRadius:"8px",
+    textAlign:"left",
+    whiteSpace:"pre-line",
+    lineHeight:"1.6"
+  }}>
+    <h3 style={{marginBottom:"10px", fontWeight:"600"}}> Doctor's AI Interpretation </h3>
+    <p style={{fontSize:"15px"}}>
+      <Markdown>
+        {aiExplanation}
+      </Markdown>
+    </p>
+  </div>
+)}
+
+
 </div>
 
       <Footer/>
