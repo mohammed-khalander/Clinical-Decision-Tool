@@ -867,7 +867,7 @@ const makePrediction = async (req, res) => {
     }
     const patient = await Patient.findById(patientId);
 
-    const details = await PatientDetails.findOne({patient:patientId});
+    const details = await PatientDetails.findOne({patient:patientId}).populate('patient');
 
     if(!details){
       return res.json({success:false,message:`No Patient Details Found`});
@@ -896,12 +896,13 @@ const makePrediction = async (req, res) => {
 
     const { prediction, probability } = pythonResponse.data;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `
         You are a medical assistant. Explain heart disease risk level clearly.
 
         Patient Details:
+        Name:${details.patient.fullName}
         Age: ${details.age}
         Sex: ${details.sex === 1 ? "Male" : "Female"}
         Chest Pain Type (cp): ${details.cp}
@@ -952,6 +953,7 @@ const makePrediction = async (req, res) => {
     });
 
   }catch(error){
+    console.log('Error Occured in prediction End-Point backend',error);
     return res.json({success:false,message:`Prediction Error: ${error}`});
   }
 };

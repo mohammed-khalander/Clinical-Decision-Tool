@@ -856,7 +856,9 @@ import { AppContext } from '../Contexts/AppContext';
 import { toast } from 'react-toastify';
 import './CSS/PatientDetails.css';
 import Footer from '../Components/Footer';
-import Markdown from 'react-markdown'
+import Markdown from 'react-markdown';
+import {Sparkles} from 'lucide-react';
+
 const PatientDetails = () => {
 
   const { patientData, backend_URL } = useContext(AppContext);
@@ -868,6 +870,8 @@ const PatientDetails = () => {
   const [predictionProbability, setPredictionProbability] = useState(null);
 
   const [aiExplanation, setAiExplanation] = useState(null);
+
+  const [thinking, setThinking] = useState(false);
 
 
 
@@ -951,6 +955,7 @@ setEditState(false);
 
 
 const handlePredict = async () => {
+  setThinking(true);
   try {
     const fetchOptions = {
       method:"POST",
@@ -976,6 +981,7 @@ const handlePredict = async () => {
     toast.error("Prediction Error");
     console.log("Prediction Error:", error);
   }
+  setThinking(false);
 };
 
 
@@ -1177,7 +1183,14 @@ const handlePredict = async () => {
   textAlign:"center"
 }}>
   <h2 style={{marginBottom:"15px"}}> Heart Disease Risk Prediction </h2>
-
+  {
+    thinking?(
+      <div className='flex justify-center align-center gap-4'>
+          <Sparkles className='align-center animate-spin' /> <div className='grid items-center'>  Thinking..... </div>
+      </div>
+    ):<>
+    
+    
   <button
     onClick={handlePredict}
     style={{
@@ -1190,9 +1203,12 @@ const handlePredict = async () => {
       fontSize:"16px",
       marginBottom:"15px"
     }}
-  >
+    disabled={thinking}
+    >
     Predict
   </button>
+    </>
+  }
 
   {predictionResult && (
     <div style={{marginTop:"15px"}}>
