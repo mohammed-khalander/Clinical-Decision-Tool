@@ -191,7 +191,7 @@ const PatientDetailsSchema = new mongoose.Schema(
 
     // Model Output
     disease_prediction: {
-        type: String, 
+        type: Number, 
         required: false 
     }, // 1 = Disease, 0 = No Disease
 

@@ -49,8 +49,8 @@ def predict(data: PatientInput):
     print("Patient input ::: Scaled one",df_scaled,"\n")
 
     # Predict
-    pred = model.predict(df_scaled)[0]
-    prob = model.predict_proba(df_scaled)[0][1]
+    pred = int(model.predict(df_scaled)[0])
+    prob = float(model.predict_proba(df_scaled)[0][1])
 
     print("Patient Prediction ", pred,prob,"\n")
 
@@ -65,8 +65,12 @@ def predict(data: PatientInput):
 
     patients.insert_one(record)
 
+    # return {
+    #     "prediction": "Heart Disease Likely" if pred == 1 else "No Heart Disease Detected",
+    #     "probability": prob
+    # }
     return {
-        "prediction": "Heart Disease Likely" if pred == 1 else "No Heart Disease Detected",
+        "prediction": pred,
         "probability": prob
     }
 

@@ -896,7 +896,12 @@ const makePrediction = async (req, res) => {
 
     const { prediction, probability } = pythonResponse.data;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    console.log(prediction);
+    console.log(pythonResponse);
+    console.log(typeof prediction);
+
+    // const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-8b" });
+
 
     const prompt = `
         You are a medical assistant. Explain heart disease risk level clearly.
@@ -927,19 +932,80 @@ const makePrediction = async (req, res) => {
         - Keep it empathetic, professional, and helpful.
     `;
 
-    const aiResponse = await model.generateContent(prompt);
-    console.log("Response from AI looks like ", aiResponse);
-    const ai_text = aiResponse.response.text();
-    console.log("The Response Text is", ai_text);
+    // const aiResponse = await model.generateContent(prompt);
+    // console.log("Response from AI looks like ", aiResponse);
+    // const ai_text = aiResponse.response.text();
+
+    // console.log("The Response Text is", ai_text);
 
 
+    // const response = await fetch(
+    //   `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       contents: [
+    //         {
+    //           parts: [
+    //             {
+    //               text: prompt,
+    //             },
+    //           ],
+    //         },
+    //       ],
+    //     }),
+    //   }
+    // );
 
+    // if (!response.ok) {
+    //   const errorData = await response.json();
+    //   throw new Error(errorData.error?.message || "Failed to get prediction from Gemini");
+    // }
+
+    // const data = await response.json();
+    // const aiText = data.candidates[0]?.content?.parts[0]?.text || "";
+
+    // if (!aiText) {
+    //   throw new Error("No response from AI");
+    // }
+
+
+      try {
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "mistralai/devstral-2512:free",
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ]
+      },
+      {
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "HTTP-Referer": "http://localhost:3000", // Your site (optional)
+          "X-Title": "Clinical Decision Tool",      // App name (optional)
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    // Extract assistant message
+    const aiText = response.data.choices?.[0]?.message?.content || "No response.";
+    // return aiText;
+    console.log(aiText)
+    
     await PatientDetails.findOneAndUpdate(
       {patient:patientId},
       {$set:{
         disease_prediction: prediction,
         prediction_probability: probability,
-        ai_explanation: ai_text
+        ai_explanation: aiText
       }}
     );
 
@@ -949,8 +1015,33 @@ const makePrediction = async (req, res) => {
       prediction,
       probability,
       predictionText: prediction === 1 ? "High Risk of Heart Disease" : "Low Risk / No Heart Disease",
-      ai_explanation: ai_text
+      ai_explanation: aiText
     });
+
+  } catch (error) {
+    console.error("OpenRouter Error:", error.response?.data || error);
+    return "AI explanation could not be generated.";
+  }
+
+
+
+    // await PatientDetails.findOneAndUpdate(
+    //   {patient:patientId},
+    //   {$set:{
+    //     disease_prediction: prediction,
+    //     prediction_probability: probability,
+    //     ai_explanation: aiText
+    //   }}
+    // );
+
+    // return res.json({
+    //   success:true,
+    //   message:"Prediction + Explanation Generated",
+    //   prediction,
+    //   probability,
+    //   predictionText: prediction === 1 ? "High Risk of Heart Disease" : "Low Risk / No Heart Disease",
+    //   ai_explanation: aiText
+    // });
 
   }catch(error){
     console.log('Error Occured in prediction End-Point backend',error);

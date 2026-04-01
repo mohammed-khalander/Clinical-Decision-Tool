@@ -1122,7 +1122,7 @@ const handlePredict = async () => {
           </div>
         </div>
 
-        <button style={{marginBottom:"10px",marginTop:"50px"}}> Submit Details </button>
+        <button style={{marginBottom:"10px",marginTop:"50px"}} onClick={(evt)=>{handleSubmit(evt)}}> Submit Details </button>
 
       </form>
       <Footer/>
