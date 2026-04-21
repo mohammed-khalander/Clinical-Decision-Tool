@@ -10,7 +10,7 @@ model = joblib.load("heart_model.pkl")
 scaler = joblib.load("scaler.pkl")
 
 # ----------------- Connect MongoDB ---------------------
-client = MongoClient("mongodb+srv://mini-project:mini-project@cluster0.owzgcap.mongodb.net/CDT?appName=Cluster0")
+client = MongoClient("mongodb+srv://mini-project:mini-project@miniproject.ndmpbu7.mongodb.net/?appName=MiniProject")
 db = client["CDT"]
 patients = db["PatientDetails"]
 
