@@ -133,7 +133,8 @@ const Login = () => {
               {
                 !loginState ?
                 // <button> Create Account </button>:
-                <button> Send OTP </button>:
+                // <button> Send OTP </button>:
+                <button> Sign Up </button>:
                 <button> Login </button>
 
               }
