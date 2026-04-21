@@ -124,7 +124,7 @@ const signUp = async (req,res)=>{
 
 
             // const info = await transporter.sendMail(mailOption);
-            console.log(`Mail Has been Sent With The message id :- ${info}, ${info.messageId}`); 
+            // console.log(`Mail Has been Sent With The message id :- ${info}, ${info.messageId}`); 
 
         }catch(error){
             console.log(`Error while Generating the mail ${error}, ${error.message}`);
