@@ -981,7 +981,7 @@ const makePrediction = async (req, res) => {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "mistralai/devstral-2512:free",
+        model: "openai/gpt-oss-20b:free",
         messages: [
           {
             role: "user",
