@@ -72,7 +72,6 @@ const signUp = async (req,res)=>{
         let updatedUser = "";
 
         if(!userExists){
-
             newUser = await Patient.create({
                 fullName,
                 email,
@@ -124,7 +123,7 @@ const signUp = async (req,res)=>{
             //<img src=${'/Health.png'} alt="Health Is Wealth">
 
 
-            const info = await transporter.sendMail(mailOption);
+            // const info = await transporter.sendMail(mailOption);
             console.log(`Mail Has been Sent With The message id :- ${info}, ${info.messageId}`); 
 
         }catch(error){
@@ -133,9 +132,14 @@ const signUp = async (req,res)=>{
         }
 
 
+        setUserTokenAndCookie(newUser,res);
+
+        return res.json({success:true,message:`Account Has Been Created And Verified Succcessfully, Update The Profile Please`});
+
+
 
         // res.json({success:true,message:`A new Patient Has Been Registered Success Fully \n Please Update Your Profile`});
-        res.json({success:true,message:`OTP Has Been Sent SuccessFully`});
+        // res.json({success:true,message:`OTP Has Been Sent SuccessFully`});
 
 
     }catch(error){
