@@ -436,7 +436,10 @@ const showSelectedPatientAppointment = async (req,res)=>{
         
         const appointments = await Appointment.find().populate('patient').populate('doctor');
 
+        // console.log("Show selected patients ",appointments);
+
         const filteredAppointments = appointments.filter((app,ind)=>{
+            console.log("Appointment ",app);
             return app.patient._id == userId;
         })
 
