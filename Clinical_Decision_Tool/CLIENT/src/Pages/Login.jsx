@@ -57,10 +57,11 @@ const Login = () => {
 
           if(data.success){
             toast.success(data.message);
-            // setIsPatientLoggedIn(true);
-            // getAuthStatus();
+            setIsPatientLoggedIn(true);
+            getAuthStatus();
             setPatientMail(formDetails.email);
-            navigate('/verifyEmail');
+            // navigate('/verifyEmail');
+            navigate('/');
             
           }else{
             console.log(data);
